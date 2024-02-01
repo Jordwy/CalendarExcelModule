@@ -1,0 +1,63 @@
+// Calendar Excel Module
+// Version: V0.0.1
+// Author: JorDwy
+// Source: https://github.com/Jordwy
+
+
+
+
+//  ----    CONSTANTS    ----    //
+
+_DAYS_IN_WEEK_ = 7;
+
+
+//  ----    FUNCTIONS    ----    //
+
+
+
+
+/** DAYS IN YEAR 
+ Returns full days in start date + 12 months inc start & end day.*/
+daysInYear = LAMBDA(startDate, DAYS(EOMONTH(startDate, 11), startDate) + 1);
+
+/** ROUNDED UP NUMBER OF WEEKS IN YEAR 
+ Returns full weeks in start date + 12 months inc start & end day.*/
+weeksInYear = LAMBDA(startDate,
+    ROUNDUP(daysInYear(startDate) / _DAYS_IN_WEEK_, 0)
+);
+
+
+/** ARRAY OF WEEKS
+ Spills down an array of weeks, optional prefix such as "Week" to show "Week 01" */
+weeksArray = LAMBDA(numberOfWeeks, [prefix],
+    IF(
+        ISOMITTED(prefix),
+        SEQUENCE(numberOfWeeks),
+        BYROW(
+            SEQUENCE(numberOfWeeks),
+            LAMBDA(each, TEXTJOIN(" ", 1, prefix, TEXT(each, "00")))
+        )
+    )
+);
+
+/** FULL YEAR CALENDAR 
+ Spills down a full calendar, week by week for full year */
+fullYearDates = LAMBDA(startDate,
+    MAKEARRAY(
+        weeksInYear(startDate),
+        8,
+        LAMBDA(row, col,
+            SWITCH(
+                col,
+                1, "Week " & TEXT(row, "00"),
+                (col - 2) + ((row - 1) * _DAYS_IN_WEEK_) + startDate
+            )
+        )
+    )
+);
+
+//  ----    TEMPLATE    ----    //
+
+/** FUNCTION
+Description of Function*/
+_templateFunction = "";
